@@ -229,7 +229,6 @@ public class HealthBarRenderer {
 		final boolean hideHealthElements = factionId != null
 				&& NeatConfig.instance.factionIdBlacklist().contains(factionId);
 		float padding = NeatConfig.instance.backgroundPadding();
-		final float healthContentOffset = hideHealthElements ? barHeight : 0F;
 		final String name = living.hasCustomName()
 				? ChatFormatting.ITALIC + living.getCustomName().getString()
 				: living.getDisplayName().getString();
@@ -259,38 +258,35 @@ public class HealthBarRenderer {
 			if (!NeatConfig.instance.showEntityName()) {
 				bgHeight -= (int) 4F;
 			}
-			float offsetX = hideHealthElements ? nameLen / 2.0F : halfSize;
 			VertexConsumer builder = buffers.getBuffer(NeatRenderType.BAR_TEXTURE_TYPE);
-			builder.addVertex(poseStack.last().pose(), -offsetX - padding, healthContentOffset - bgHeight, 0.01F).setColor(0, 0, 0, 60).setUv(0.0F, 0.0F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), -offsetX - padding, barHeight + padding, 0.01F).setColor(0, 0, 0, 60).setUv(0.0F, 0.5F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), offsetX + padding, barHeight + padding, 0.01F).setColor(0, 0, 0, 60).setUv(1.0F, 0.5F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), offsetX + padding, healthContentOffset - bgHeight, 0.01F).setColor(0, 0, 0, 60).setUv(1.0F, 0.0F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), -halfSize - padding, -bgHeight, 0.01F).setColor(0, 0, 0, 60).setUv(0.0F, 0.0F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), -halfSize - padding, barHeight + padding, 0.01F).setColor(0, 0, 0, 60).setUv(0.0F, 0.5F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), halfSize + padding, barHeight + padding, 0.01F).setColor(0, 0, 0, 60).setUv(1.0F, 0.5F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), halfSize + padding, -bgHeight, 0.01F).setColor(0, 0, 0, 60).setUv(1.0F, 0.0F).setLight(light);
 		}
 
 		// Health Bar
-		if (!hideHealthElements) {
-			int argb = getColor(living, NeatConfig.instance.colorByType(), boss);
-			int r = (argb >> 16) & 0xFF;
-			int g = (argb >> 8) & 0xFF;
-			int b = argb & 0xFF;
-			// There are scenarios in vanilla where the current health
-			// can temporarily exceed the max health.
-			float maxHealth = Math.max(living.getHealth(), living.getMaxHealth());
-			float healthHalfSize = halfSize * (living.getHealth() / maxHealth);
+		int argb = hideHealthElements ? 0xFFFFFF : getColor(living, NeatConfig.instance.colorByType(), boss);
+		int r = (argb >> 16) & 0xFF;
+		int g = (argb >> 8) & 0xFF;
+		int b = argb & 0xFF;
+		// There are scenarios in vanilla where the current health
+		// can temporarily exceed the max health.
+		float maxHealth = Math.max(living.getHealth(), living.getMaxHealth());
+		float healthHalfSize = halfSize * (living.getHealth() / maxHealth);
 
-			VertexConsumer builder = buffers.getBuffer(NeatRenderType.BAR_TEXTURE_TYPE);
-			builder.addVertex(poseStack.last().pose(), -halfSize, 0, 0.001F).setColor(r, g, b, 127).setUv(0.0F, 0.75F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), -halfSize, barHeight, 0.001F).setColor(r, g, b, 127).setUv(0.0F, 1.0F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, barHeight, 0.001F).setColor(r, g, b, 127).setUv(1.0F, 1.0F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, 0, 0.001F).setColor(r, g, b, 127).setUv(1.0F, 0.75F).setLight(light);
+		VertexConsumer builder = buffers.getBuffer(NeatRenderType.BAR_TEXTURE_TYPE);
+		builder.addVertex(poseStack.last().pose(), -halfSize, 0, 0.001F).setColor(r, g, b, 127).setUv(0.0F, 0.75F).setLight(light);
+		builder.addVertex(poseStack.last().pose(), -halfSize, barHeight, 0.001F).setColor(r, g, b, 127).setUv(0.0F, 1.0F).setLight(light);
+		builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, barHeight, 0.001F).setColor(r, g, b, 127).setUv(1.0F, 1.0F).setLight(light);
+		builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, 0, 0.001F).setColor(r, g, b, 127).setUv(1.0F, 0.75F).setLight(light);
 
-			// Blank part of the bar
-			if (healthHalfSize < halfSize) {
-				builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, 0, 0.001F).setColor(0, 0, 0, 127).setUv(0.0F, 0.5F).setLight(light);
-				builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, barHeight, 0.001F).setColor(0, 0, 0, 127).setUv(0.0F, 0.75F).setLight(light);
-				builder.addVertex(poseStack.last().pose(), halfSize, barHeight, 0.001F).setColor(0, 0, 0, 127).setUv(1.0F, 0.75F).setLight(light);
-				builder.addVertex(poseStack.last().pose(), halfSize, 0, 0.001F).setColor(0, 0, 0, 127).setUv(1.0F, 0.5F).setLight(light);
-			}
+		// Blank part of the bar
+		if (healthHalfSize < halfSize) {
+			builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, 0, 0.001F).setColor(0, 0, 0, 127).setUv(0.0F, 0.5F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, barHeight, 0.001F).setColor(0, 0, 0, 127).setUv(0.0F, 0.75F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), halfSize, barHeight, 0.001F).setColor(0, 0, 0, 127).setUv(1.0F, 0.75F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), halfSize, 0, 0.001F).setColor(0, 0, 0, 127).setUv(1.0F, 0.5F).setLight(light);
 		}
 
 		// Text
@@ -305,8 +301,7 @@ public class HealthBarRenderer {
 				if (NeatConfig.instance.showEntityName()) {
 					poseStack.pushPose();
 					float nameX = NeatConfig.instance.centerEntityName() ? -nameLen / 2.0F : -halfSize;
-					float nameY = hideHealthElements ? barHeight + 0.5F - 4.5F : -4.5F;
-					poseStack.translate(nameX, nameY, 0F);
+					poseStack.translate(nameX, -4.5F, 0F);
 					poseStack.scale(textScale, textScale, textScale);
 					mc.font.drawInBatch(name, 0, 0, nameColor, false, poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, black, light);
 					poseStack.popPose();
@@ -314,64 +309,62 @@ public class HealthBarRenderer {
 			}
 
 			// Health values (and debug ID)
-			if (!hideHealthElements) {
-				final float healthValueTextScale = 0.75F * textScale;
-				poseStack.pushPose();
-				poseStack.translate(-halfSize, -4.5F, 0F);
-				poseStack.scale(healthValueTextScale, healthValueTextScale, healthValueTextScale);
+			final float healthValueTextScale = 0.75F * textScale;
+			poseStack.pushPose();
+			poseStack.translate(-halfSize, -4.5F, 0F);
+			poseStack.scale(healthValueTextScale, healthValueTextScale, healthValueTextScale);
 
-				int h = NeatConfig.instance.hpTextHeight();
-				DecimalFormat health_format = new DecimalFormat(NeatConfig.instance.decimalFormat());
+			int h = NeatConfig.instance.hpTextHeight();
+			DecimalFormat health_format = new DecimalFormat(NeatConfig.instance.decimalFormat());
 
-				if (NeatConfig.instance.centerHealthText()) {
-					String currentHp = NeatConfig.instance.showCurrentHP() ? health_format.format(living.getHealth()) : "";
-					String maxHp = NeatConfig.instance.showMaxHP() ? health_format.format(living.getMaxHealth()) : "";
-					String percentage = NeatConfig.instance.showPercentage() ? (int) (100 * living.getHealth() / living.getMaxHealth()) + "%" : "";
-					StringBuilder centeredText = new StringBuilder();
-					if (!currentHp.isEmpty()) {
-						centeredText.append(currentHp);
-					}
-					if (!maxHp.isEmpty()) {
-						if (!centeredText.isEmpty()) {
-							centeredText.append('/');
-						}
-						centeredText.append(maxHp);
-					}
-					if (!percentage.isEmpty()) {
-						boolean empty = centeredText.isEmpty();
-						if (!empty) {
-							centeredText.append(" (");
-						}
-						centeredText.append(percentage);
-						if (!empty) {
-							centeredText.append(')');
-						}
-					}
+			if (NeatConfig.instance.centerHealthText()) {
+				String currentHp = NeatConfig.instance.showCurrentHP() ? health_format.format(living.getHealth()) : "";
+				String maxHp = NeatConfig.instance.showMaxHP() ? health_format.format(living.getMaxHealth()) : "";
+				String percentage = NeatConfig.instance.showPercentage() ? (int) (100 * living.getHealth() / living.getMaxHealth()) + "%" : "";
+				StringBuilder centeredText = new StringBuilder();
+				if (!currentHp.isEmpty()) {
+					centeredText.append(hideHealthElements ? "-" : currentHp);
+				}
+				if (!maxHp.isEmpty()) {
 					if (!centeredText.isEmpty()) {
-						String text = centeredText.toString();
-						float textX = halfSize / healthValueTextScale - mc.font.width(text) / 2.0F;
-						mc.font.drawInBatch(text, textX, h, textColor, false, poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, black, light);
+						centeredText.append('/');
 					}
-				} else {
-					if (NeatConfig.instance.showCurrentHP()) {
-						String hpStr = health_format.format(living.getHealth());
-						mc.font.drawInBatch(hpStr, 2, h, textColor, false, poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, black, light);
+					centeredText.append(hideHealthElements ? "-" : maxHp);
+				}
+				if (!percentage.isEmpty() && !hideHealthElements) {
+					boolean empty = centeredText.isEmpty();
+					if (!empty) {
+						centeredText.append(" (");
 					}
-					if (NeatConfig.instance.showMaxHP()) {
-						String maxHpStr = ChatFormatting.BOLD + health_format.format(living.getMaxHealth());
-						mc.font.drawInBatch(maxHpStr, (int) (halfSize / healthValueTextScale * 2) - mc.font.width(maxHpStr) - 2, h, textColor, false, poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, black, light);
-					}
-					if (NeatConfig.instance.showPercentage()) {
-						String percStr = (int) (100 * living.getHealth() / living.getMaxHealth()) + "%";
-						mc.font.drawInBatch(percStr, (int) (halfSize / healthValueTextScale) - mc.font.width(percStr) / 2.0F, h, textColor, false, poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, black, light);
+					centeredText.append(percentage);
+					if (!empty) {
+						centeredText.append(')');
 					}
 				}
-				if (NeatConfig.instance.enableDebugInfo() && mc.getDebugOverlay().showDebugScreen()) {
-					var id = BuiltInRegistries.ENTITY_TYPE.getKey(living.getType());
-					mc.font.drawInBatch("ID: \"" + id + "\"", 0, h + 16, textColor, false, poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, black, light);
+				if (!centeredText.isEmpty()) {
+					String text = centeredText.toString();
+					float textX = halfSize / healthValueTextScale - mc.font.width(text) / 2.0F;
+					mc.font.drawInBatch(text, textX, h, textColor, false, poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, black, light);
 				}
-				poseStack.popPose();
+			} else {
+				if (NeatConfig.instance.showCurrentHP()) {
+					String hpStr = health_format.format(living.getHealth());
+					mc.font.drawInBatch(hpStr, 2, h, textColor, false, poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, black, light);
+				}
+				if (NeatConfig.instance.showMaxHP()) {
+					String maxHpStr = ChatFormatting.BOLD + health_format.format(living.getMaxHealth());
+					mc.font.drawInBatch(maxHpStr, (int) (halfSize / healthValueTextScale * 2) - mc.font.width(maxHpStr) - 2, h, textColor, false, poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, black, light);
+				}
+				if (NeatConfig.instance.showPercentage()) {
+					String percStr = (int) (100 * living.getHealth() / living.getMaxHealth()) + "%";
+					mc.font.drawInBatch(percStr, (int) (halfSize / healthValueTextScale) - mc.font.width(percStr) / 2.0F, h, textColor, false, poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, black, light);
+				}
 			}
+			if (NeatConfig.instance.enableDebugInfo() && mc.getDebugOverlay().showDebugScreen()) {
+				var id = BuiltInRegistries.ENTITY_TYPE.getKey(living.getType());
+				mc.font.drawInBatch("ID: \"" + id + "\"", 0, h + 16, textColor, false, poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, black, light);
+			}
+			poseStack.popPose();
 		}
 
 		poseStack.popPose(); // Remove globalScale
@@ -386,7 +379,7 @@ public class HealthBarRenderer {
 			if (NeatConfig.instance.showAttributes()) {
 				var icon = getIcon(living, boss);
 				renderIcon(living.level(), icon, poseStack, buffers,
-						globalScale, halfSize, iconOffset, zShift, healthContentOffset);
+						globalScale, halfSize, iconOffset, zShift);
 				iconOffset += 5F;
 				zShift += zBump;
 			}
@@ -403,7 +396,7 @@ public class HealthBarRenderer {
 				var iron = new ItemStack(Items.IRON_CHESTPLATE);
 				for (int i = 0; i < ironArmor; i++) {
 					renderIcon(living.level(), iron, poseStack, buffers,
-							globalScale, halfSize, iconOffset, zShift, healthContentOffset);
+							globalScale, halfSize, iconOffset, zShift);
 					iconOffset += 1F;
 					zShift += zBump;
 				}
@@ -411,7 +404,7 @@ public class HealthBarRenderer {
 				var diamond = new ItemStack(Items.DIAMOND_CHESTPLATE);
 				for (int i = 0; i < diamondArmor; i++) {
 					renderIcon(living.level(), diamond, poseStack, buffers,
-							globalScale, halfSize, iconOffset, zShift, healthContentOffset);
+							globalScale, halfSize, iconOffset, zShift);
 					iconOffset += 1F;
 					zShift += zBump;
 				}
@@ -424,8 +417,7 @@ public class HealthBarRenderer {
 	}
 
 	private static void renderIcon(Level level, ItemStack icon, PoseStack poseStack,
-				MultiBufferSource buffers, float globalScale, float halfSize, float leftShift, float zShift,
-				float healthContentOffset) {
+								   MultiBufferSource buffers, float globalScale, float halfSize, float leftShift, float zShift) {
 		if (!icon.isEmpty()) {
 			final float iconScale = 0.12F;
 			poseStack.pushPose();
@@ -433,7 +425,7 @@ public class HealthBarRenderer {
 			// but in the icon rendering section we don't use globalScale, so we need
 			// to manually multiply it in to ensure the units line up.
 			double dx = (halfSize - leftShift) * globalScale + NeatConfig.instance.iconOffsetX();
-			double dy = (3F + healthContentOffset) * globalScale;
+			double dy = 3F * globalScale;
 			double dz = zShift * globalScale;
 			// Need to negate X due to our rotation below
 			poseStack.translate(-dx, dy + NeatConfig.instance.iconOffsetY(), dz);
