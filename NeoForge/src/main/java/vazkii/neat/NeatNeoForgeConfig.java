@@ -7,6 +7,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
+import java.util.Map;
 
 public class NeatNeoForgeConfig {
 	public static void init(ModContainer container) {
@@ -31,10 +32,13 @@ public class NeatNeoForgeConfig {
 		private final ModConfigSpec.ConfigValue<Boolean> groupArmor;
 		private final ModConfigSpec.ConfigValue<Boolean> colorByType;
 		private final ModConfigSpec.ConfigValue<String> textColor;
+		private final ModConfigSpec.ConfigValue<List<? extends Integer>> factionIdBlacklist;
+		private final ModConfigSpec.ConfigValue<Map<Integer, Integer>> factionIdNameColors;
 		private final ModConfigSpec.ConfigValue<Integer> hpTextHeight;
 		private final ModConfigSpec.ConfigValue<Boolean> showMaxHP;
 		private final ModConfigSpec.ConfigValue<Boolean> showCurrentHP;
 		private final ModConfigSpec.ConfigValue<Boolean> showPercentage;
+		private final ModConfigSpec.ConfigValue<Boolean> centerHealthText;
 		private final ModConfigSpec.ConfigValue<Boolean> showOnPassive;
 		private final ModConfigSpec.ConfigValue<Boolean> showOnHostile;
 		private final ModConfigSpec.ConfigValue<Boolean> showOnPlayers;
@@ -42,6 +46,7 @@ public class NeatNeoForgeConfig {
 		private final ModConfigSpec.ConfigValue<Boolean> showOnlyFocused;
 		private final ModConfigSpec.ConfigValue<Boolean> showFullHealth;
 		private final ModConfigSpec.ConfigValue<Boolean> showEntityName;
+		private final ModConfigSpec.ConfigValue<Boolean> centerEntityName;
 		private final ModConfigSpec.ConfigValue<NeatConfig.NameTagRenderBehavior> nameTagRenderBehavior;
 		private final ModConfigSpec.ConfigValue<Double> iconOffsetX;
 		private final ModConfigSpec.ConfigValue<Double> iconOffsetY;
@@ -67,10 +72,13 @@ public class NeatNeoForgeConfig {
 			groupArmor = builder.comment("Group 5 iron icons into 1 diamond icon").define("group_armor", true);
 			colorByType = builder.comment("Color health bar by mob type instead of health percentage").define("color_health_bar_by_type", false);
 			textColor = builder.comment("Text color in hex code format").define("text_color", "FFFFFF");
+			factionIdBlacklist = builder.comment("Faction IDs whose health elements should not be rendered").defineList("faction_id_blacklist", List.of(), a -> a instanceof Integer);
+			factionIdNameColors = builder.comment("Faction ID to entity name color mapping, using RGB hex integers").define("faction_id_name_colors", Map.of());
 			hpTextHeight = builder.comment("Height of the text on the health bar").define("hp_text_height", 14);
 			showMaxHP = builder.comment("Whether the maximum health of the mob should be shown").define("show_max_hp", true);
 			showCurrentHP = builder.comment("Whether the current health of the mob should be shown").define("show_current_hp", true);
 			showPercentage = builder.comment("Whether the percentage health of the mob should be shown").define("show_hp_percentage", true);
+			centerHealthText = builder.comment("Center health values as current/max-percentage in the health bar").define("center_health_text", false);
 			showOnPassive = builder.comment("Whether bars on passive mobs should be shown").define("show_on_passive", true);
 			showOnHostile = builder.comment("Whether bars on hostile mobs should be shown (does not include bosses)").define("show_on_hostile", true);
 			showOnPlayers = builder.comment("Whether bars on players should be shown").define("display_on_players", true);
@@ -79,6 +87,7 @@ public class NeatNeoForgeConfig {
 			showFullHealth = builder.comment("Show bars for mobs that are at full health").define("show_entity_full_health", true);
 			enableDebugInfo = builder.comment("Show extra debug info on the bar when F3 is enabled").define("show_debug_with_f3", true);
 			showEntityName = builder.comment("Show entity name").define("show_entity_name", true);
+			centerEntityName = builder.comment("Center the entity name over the health bar").define("center_entity_name", false);
 			nameTagRenderBehavior = builder.comment("Changes when the vanilla name tag should be rendered").defineEnum("name_tag_render_behavior", NeatConfig.NameTagRenderBehavior.WHEN_NO_HEALTHBAR);
 			iconOffsetX = builder.comment("Offsets the healtbar icons on the x axis").define("icon_offset_x", 0.0);
 			iconOffsetY = builder.comment("Offsets the healtbar icons on the y axis").define("icon_offset_y", 0.0);
@@ -164,6 +173,17 @@ public class NeatNeoForgeConfig {
 			return textColor.get();
 		}
 
+		@SuppressWarnings("unchecked")
+		@Override
+		public List<Integer> factionIdBlacklist() {
+			return (List<Integer>) (List<?>) factionIdBlacklist.get();
+		}
+
+		@Override
+		public Map<Integer, Integer> factionIdNameColors() {
+			return factionIdNameColors.get();
+		}
+
 		@Override
 		public int hpTextHeight() {
 			return hpTextHeight.get();
@@ -182,6 +202,11 @@ public class NeatNeoForgeConfig {
 		@Override
 		public boolean showPercentage() {
 			return showPercentage.get();
+		}
+
+		@Override
+		public boolean centerHealthText() {
+			return centerHealthText.get();
 		}
 
 		@Override
@@ -222,6 +247,11 @@ public class NeatNeoForgeConfig {
 		@Override
 		public boolean showEntityName() {
 			return showEntityName.get();
+		}
+
+		@Override
+		public boolean centerEntityName() {
+			return centerEntityName.get();
 		}
 
 		@Override

@@ -10,6 +10,7 @@ import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class NeatFabricConfig {
@@ -55,6 +56,10 @@ public class NeatFabricConfig {
 		private boolean colorByType;
 		@Comment("Text color in hex code format")
 		private String textColor;
+		@Comment("Faction IDs whose health elements should not be rendered")
+		private List<Integer> factionIdBlacklist;
+		@Comment("Faction ID to entity name color mapping, using RGB hex integers")
+		private Map<Integer, Integer> factionIdNameColors;
 		@Comment("Height of the text on the health bar")
 		private int hpTextHeight;
 		@Comment("Whether the maximum health of the mob should be shown")
@@ -63,6 +68,8 @@ public class NeatFabricConfig {
 		private boolean showCurrentHP;
 		@Comment("Whether the percentage health of the mob should be shown")
 		private boolean showPercentage;
+		@Comment("Center health values as current/max-percentage in the health bar")
+		private boolean centerHealthText;
 		@Comment("Whether bars on passive mobs should be shown")
 		private boolean showOnPassive;
 		@Comment("Whether bars on hostile mobs should be shown (does not include bosses)")
@@ -79,6 +86,8 @@ public class NeatFabricConfig {
 		private boolean enableDebugInfo;
 		@Comment("Show entity name")
 		private boolean showEntityName;
+		@Comment("Center the entity name over the health bar")
+		private boolean centerEntityName;
 		@Comment("Changes when the vanilla name tag should be rendered")
 		@ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
 		private NeatConfig.NameTagRenderBehavior nameTagRenderBehavior;
@@ -107,10 +116,13 @@ public class NeatFabricConfig {
 			groupArmor = true;
 			colorByType = false;
 			textColor = "FFFFFF";
+			factionIdBlacklist = List.of();
+			factionIdNameColors = Map.of();
 			hpTextHeight = 14;
 			showMaxHP = true;
 			showCurrentHP = true;
 			showPercentage = true;
+			centerHealthText = false;
 			showOnPassive = true;
 			showOnHostile = true;
 			showOnPlayers = true;
@@ -119,6 +131,7 @@ public class NeatFabricConfig {
 			showFullHealth = true;
 			enableDebugInfo = true;
 			showEntityName = true;
+			centerEntityName = false;
 			nameTagRenderBehavior = NeatConfig.NameTagRenderBehavior.WHEN_NO_HEALTHBAR;
 			iconOffsetX = 0.0;
 			iconOffsetY = 0.0;
@@ -202,6 +215,16 @@ public class NeatFabricConfig {
 		}
 
 		@Override
+		public List<Integer> factionIdBlacklist() {
+			return factionIdBlacklist;
+		}
+
+		@Override
+		public Map<Integer, Integer> factionIdNameColors() {
+			return factionIdNameColors;
+		}
+
+		@Override
 		public int hpTextHeight() {
 			return hpTextHeight;
 		}
@@ -219,6 +242,11 @@ public class NeatFabricConfig {
 		@Override
 		public boolean showPercentage() {
 			return showPercentage;
+		}
+
+		@Override
+		public boolean centerHealthText() {
+			return centerHealthText;
 		}
 
 		@Override
@@ -259,6 +287,11 @@ public class NeatFabricConfig {
 		@Override
 		public boolean showEntityName() {
 			return showEntityName;
+		}
+
+		@Override
+		public boolean centerEntityName() {
+			return centerEntityName;
 		}
 
 		@Override

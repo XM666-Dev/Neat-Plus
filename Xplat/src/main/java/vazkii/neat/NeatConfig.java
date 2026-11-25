@@ -1,6 +1,7 @@
 package vazkii.neat;
 
 import java.util.List;
+import java.util.Map;
 
 public class NeatConfig {
 
@@ -23,10 +24,13 @@ public class NeatConfig {
 		boolean groupArmor();
 		boolean colorByType();
 		String textColor();
+		List<Integer> factionIdBlacklist();
+		Map<Integer, Integer> factionIdNameColors();
 		int hpTextHeight();
 		boolean showMaxHP();
 		boolean showCurrentHP();
 		boolean showPercentage();
+		boolean centerHealthText();
 		boolean showOnPassive();
 		boolean showOnHostile();
 		boolean showOnPlayers();
@@ -35,6 +39,7 @@ public class NeatConfig {
 		boolean showFullHealth();
 		boolean enableDebugInfo();
 		boolean showEntityName();
+		boolean centerEntityName();
 		NameTagRenderBehavior nameTagRenderBehavior();
 		double iconOffsetX();
 		double iconOffsetY();
