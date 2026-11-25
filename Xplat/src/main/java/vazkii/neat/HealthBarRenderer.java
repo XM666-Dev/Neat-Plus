@@ -228,6 +228,7 @@ public class HealthBarRenderer {
 		final Integer factionId = CNPCCompat.getNpcFactionId(living);
 		final boolean hideHealthElements = factionId != null
 				&& NeatConfig.instance.factionIdBlacklist().contains(factionId);
+		float padding = NeatConfig.instance.backgroundPadding();
 		final float healthContentOffset = hideHealthElements ? barHeight : 0F;
 		final String name = living.hasCustomName()
 				? ChatFormatting.ITALIC + living.getCustomName().getString()
@@ -254,16 +255,16 @@ public class HealthBarRenderer {
 
 		// Background
 		if (NeatConfig.instance.drawBackground()) {
-			float padding = NeatConfig.instance.backgroundPadding();
 			int bgHeight = NeatConfig.instance.backgroundHeight();
 			if (!NeatConfig.instance.showEntityName()) {
 				bgHeight -= (int) 4F;
 			}
+			float offsetX = hideHealthElements ? nameLen / 2.0F : halfSize;
 			VertexConsumer builder = buffers.getBuffer(NeatRenderType.BAR_TEXTURE_TYPE);
-			builder.addVertex(poseStack.last().pose(), -halfSize - padding, -bgHeight, 0.01F).setColor(0, 0, 0, 60).setUv(0.0F, 0.0F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), -halfSize - padding, barHeight + padding, 0.01F).setColor(0, 0, 0, 60).setUv(0.0F, 0.5F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), halfSize + padding, barHeight + padding, 0.01F).setColor(0, 0, 0, 60).setUv(1.0F, 0.5F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), halfSize + padding, -bgHeight, 0.01F).setColor(0, 0, 0, 60).setUv(1.0F, 0.0F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), -offsetX - padding, healthContentOffset - bgHeight, 0.01F).setColor(0, 0, 0, 60).setUv(0.0F, 0.0F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), -offsetX - padding, barHeight + padding, 0.01F).setColor(0, 0, 0, 60).setUv(0.0F, 0.5F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), offsetX + padding, barHeight + padding, 0.01F).setColor(0, 0, 0, 60).setUv(1.0F, 0.5F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), offsetX + padding, healthContentOffset - bgHeight, 0.01F).setColor(0, 0, 0, 60).setUv(1.0F, 0.0F).setLight(light);
 		}
 
 		// Health Bar
@@ -304,7 +305,8 @@ public class HealthBarRenderer {
 				if (NeatConfig.instance.showEntityName()) {
 					poseStack.pushPose();
 					float nameX = NeatConfig.instance.centerEntityName() ? -nameLen / 2.0F : -halfSize;
-					poseStack.translate(nameX, -4.5F + healthContentOffset, 0F);
+					float nameY = hideHealthElements ? barHeight + 0.5F - 4.5F : -4.5F;
+					poseStack.translate(nameX, nameY, 0F);
 					poseStack.scale(textScale, textScale, textScale);
 					mc.font.drawInBatch(name, 0, 0, nameColor, false, poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, black, light);
 					poseStack.popPose();
