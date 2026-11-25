@@ -37,13 +37,6 @@ import java.util.*;
 
 public class HealthBarRenderer {
 
-	private static Integer getNpcFactionId(Entity entity) {
-		if (!(entity instanceof EntityNPCInterface npc)) {
-			return null;
-		}
-		return npc.getFaction().getId();
-	}
-
 	private static Entity getEntityLookedAt(Entity e) {
 		Entity foundEntity = null;
 		final double finalDistance = 32;
@@ -233,7 +226,7 @@ public class HealthBarRenderer {
 		final float textScale = 0.5F;
 		final int barHeight = NeatConfig.instance.barHeight();
 		final boolean boss = isBoss(living);
-		final Integer factionId = getNpcFactionId(living);
+		final Integer factionId = CNPCCompat.getNpcFactionId(living);
 		final boolean hideHealthElements = factionId != null
 				&& NeatConfig.instance.factionIdBlacklist().contains(factionId);
 		final float healthContentOffset = hideHealthElements ? barHeight : 0F;
