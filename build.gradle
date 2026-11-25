@@ -16,13 +16,12 @@ subprojects {
         mavenCentral()
 
         maven {
-            name = "Modrinth"
-            url = "https://api.modrinth.com/maven"
+            url "https://cursemaven.com"
         }
     }
 
     dependencies {
-        compileOnly "maven.modrinth:vFAmwl6B:5gdSEvLv"
+        implementation "curse.maven:customnpcs-unofficial-1052708:7411561"
     }
 
     tasks.withType(JavaCompile).configureEach {

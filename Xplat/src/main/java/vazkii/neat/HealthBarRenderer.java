@@ -30,7 +30,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
-import noppes.npcs.entity.EntityNPCInterface;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -296,9 +295,8 @@ public class HealthBarRenderer {
 		// Text
 		{
 			final int textColor = HexFormat.fromHexDigits(NeatConfig.instance.textColor());
-			final int nameColor = factionId != null
-					? NeatConfig.instance.factionIdNameColors().getOrDefault(factionId, textColor)
-					: textColor;
+			final int nameColor = CNPCCompat.getFactionNameColor(factionId, textColor,
+					NeatConfig.instance.factionIdNameColors());
 			final int black = 0;
 
 			// Name

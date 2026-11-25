@@ -7,7 +7,6 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
-import java.util.Map;
 
 public class NeatNeoForgeConfig {
 	public static void init(ModContainer container) {
@@ -33,7 +32,7 @@ public class NeatNeoForgeConfig {
 		private final ModConfigSpec.ConfigValue<Boolean> colorByType;
 		private final ModConfigSpec.ConfigValue<String> textColor;
 		private final ModConfigSpec.ConfigValue<List<? extends Integer>> factionIdBlacklist;
-		private final ModConfigSpec.ConfigValue<Map<Integer, Integer>> factionIdNameColors;
+		private final ModConfigSpec.ConfigValue<List<? extends String>> factionIdNameColors;
 		private final ModConfigSpec.ConfigValue<Integer> hpTextHeight;
 		private final ModConfigSpec.ConfigValue<Boolean> showMaxHP;
 		private final ModConfigSpec.ConfigValue<Boolean> showCurrentHP;
@@ -73,7 +72,7 @@ public class NeatNeoForgeConfig {
 			colorByType = builder.comment("Color health bar by mob type instead of health percentage").define("color_health_bar_by_type", false);
 			textColor = builder.comment("Text color in hex code format").define("text_color", "FFFFFF");
 			factionIdBlacklist = builder.comment("Faction IDs whose health elements should not be rendered").defineList("faction_id_blacklist", List.of(), a -> a instanceof Integer);
-			factionIdNameColors = builder.comment("Faction ID to entity name color mapping, using RGB hex integers").define("faction_id_name_colors", Map.of());
+			factionIdNameColors = builder.comment("Faction ID to entity name color mappings, formatted as faction_id=color_hex").defineList("faction_id_name_colors", List.of(), a -> a instanceof String);
 			hpTextHeight = builder.comment("Height of the text on the health bar").define("hp_text_height", 14);
 			showMaxHP = builder.comment("Whether the maximum health of the mob should be shown").define("show_max_hp", true);
 			showCurrentHP = builder.comment("Whether the current health of the mob should be shown").define("show_current_hp", true);
@@ -180,8 +179,8 @@ public class NeatNeoForgeConfig {
 		}
 
 		@Override
-		public Map<Integer, Integer> factionIdNameColors() {
-			return factionIdNameColors.get();
+		public List<String> factionIdNameColors() {
+			return factionIdNameColors.get().stream().map(Object::toString).toList();
 		}
 
 		@Override

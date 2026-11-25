@@ -10,7 +10,6 @@ import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class NeatFabricConfig {
@@ -59,7 +58,7 @@ public class NeatFabricConfig {
 		@Comment("Faction IDs whose health elements should not be rendered")
 		private List<Integer> factionIdBlacklist;
 		@Comment("Faction ID to entity name color mapping, using RGB hex integers")
-		private Map<Integer, Integer> factionIdNameColors;
+		private List<String> factionIdNameColors;
 		@Comment("Height of the text on the health bar")
 		private int hpTextHeight;
 		@Comment("Whether the maximum health of the mob should be shown")
@@ -117,7 +116,7 @@ public class NeatFabricConfig {
 			colorByType = false;
 			textColor = "FFFFFF";
 			factionIdBlacklist = List.of();
-			factionIdNameColors = Map.of();
+			factionIdNameColors = List.of();
 			hpTextHeight = 14;
 			showMaxHP = true;
 			showCurrentHP = true;
@@ -220,7 +219,7 @@ public class NeatFabricConfig {
 		}
 
 		@Override
-		public Map<Integer, Integer> factionIdNameColors() {
+		public List<String> factionIdNameColors() {
 			return factionIdNameColors;
 		}
 

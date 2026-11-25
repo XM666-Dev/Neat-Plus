@@ -1,7 +1,6 @@
 package vazkii.neat;
 
 import java.util.List;
-import java.util.Map;
 
 public class NeatConfig {
 
@@ -25,7 +24,7 @@ public class NeatConfig {
 		boolean colorByType();
 		String textColor();
 		List<Integer> factionIdBlacklist();
-		Map<Integer, Integer> factionIdNameColors();
+		List<String> factionIdNameColors();
 		int hpTextHeight();
 		boolean showMaxHP();
 		boolean showCurrentHP();
