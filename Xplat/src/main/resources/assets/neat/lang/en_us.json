@@ -1,6 +1,7 @@
 {
   "neat.keybind.toggle": "Toggle Health Bars",
   "neat.configuration.display_on_bosses": "Display on Bosses",
+  "neat.configuration.hide_custom_npcs_boss_bars": "Hide CustomNPCs Boss Bars",
   "neat.configuration.draw_background": "Draw Background",
   "neat.configuration.background_padding": "Background Padding",
   "neat.configuration.show_armor": "Show Armor",
@@ -39,6 +40,7 @@
   "neat.configuration.blacklist": "Blacklist",
   "neat.options.title": "Neat Config",
   "text.autoconfig.neat-client.option.showOnBosses": "Display on Bosses",
+  "text.autoconfig.neat-client.option.hideCustomNpcsBossBars": "Hide CustomNPCs Boss Bars",
   "text.autoconfig.neat-client.option.drawBackground": "Draw Background",
   "text.autoconfig.neat-client.option.backgroundPadding": "Background Padding",
   "text.autoconfig.neat-client.option.showArmor": "Show Armor",

@@ -34,6 +34,7 @@ public class NeatConfig {
 		boolean showOnHostile();
 		boolean showOnPlayers();
 		boolean showOnBosses();
+		boolean hideCustomNpcsBossBars();
 		boolean showOnlyFocused();
 		boolean showFullHealth();
 		boolean enableDebugInfo();

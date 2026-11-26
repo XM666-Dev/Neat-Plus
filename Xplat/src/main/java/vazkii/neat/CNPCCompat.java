@@ -26,6 +26,13 @@ public class CNPCCompat {
         return getFactionNameColors(mappings).getOrDefault(factionId, defaultColor);
     }
 
+    public static boolean hasBossBar(Entity entity) {
+        if (!(entity instanceof EntityNPCInterface npc)) {
+            return false;
+        }
+        return npc.display.getBossbar() > 0;
+    }
+
     private static void reloadFactionNameColors(List<String> mappings) {
         if (Objects.equals(cachedMappings, mappings)) {
             return;

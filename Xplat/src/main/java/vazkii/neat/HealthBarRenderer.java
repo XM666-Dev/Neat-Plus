@@ -155,6 +155,9 @@ public class HealthBarRenderer {
 		if (!NeatConfig.instance.showOnBosses() && isBoss(living)) {
 			return false;
 		}
+		if (NeatConfig.instance.hideCustomNpcsBossBars() && CNPCCompat.hasBossBar(living)) {
+			return false;
+		}
 		if (!NeatConfig.instance.showOnPlayers() && living instanceof Player) {
 			return false;
 		}

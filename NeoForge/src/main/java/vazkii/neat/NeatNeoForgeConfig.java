@@ -42,6 +42,7 @@ public class NeatNeoForgeConfig {
 		private final ModConfigSpec.ConfigValue<Boolean> showOnHostile;
 		private final ModConfigSpec.ConfigValue<Boolean> showOnPlayers;
 		private final ModConfigSpec.ConfigValue<Boolean> showOnBosses;
+		private final ModConfigSpec.ConfigValue<Boolean> hideCustomNpcsBossBars;
 		private final ModConfigSpec.ConfigValue<Boolean> showOnlyFocused;
 		private final ModConfigSpec.ConfigValue<Boolean> showFullHealth;
 		private final ModConfigSpec.ConfigValue<Boolean> showEntityName;
@@ -82,6 +83,7 @@ public class NeatNeoForgeConfig {
 			showOnHostile = builder.comment("Whether bars on hostile mobs should be shown (does not include bosses)").define("show_on_hostile", true);
 			showOnPlayers = builder.comment("Whether bars on players should be shown").define("display_on_players", true);
 			showOnBosses = builder.comment("Whether bars on bosses should be shown").define("display_on_bosses", true);
+			hideCustomNpcsBossBars = builder.comment("Hide bars for CustomNPCs that display a boss bar").define("hide_custom_npcs_boss_bars", true);
 			showOnlyFocused = builder.comment("Only show bars for mobs you are targeting").define("only_health_bar_for_target", false);
 			showFullHealth = builder.comment("Show bars for mobs that are at full health").define("show_entity_full_health", true);
 			enableDebugInfo = builder.comment("Show extra debug info on the bar when F3 is enabled").define("show_debug_with_f3", true);
@@ -226,6 +228,11 @@ public class NeatNeoForgeConfig {
 		@Override
 		public boolean showOnBosses() {
 			return showOnBosses.get();
+		}
+
+		@Override
+		public boolean hideCustomNpcsBossBars() {
+			return hideCustomNpcsBossBars.get();
 		}
 
 		@Override

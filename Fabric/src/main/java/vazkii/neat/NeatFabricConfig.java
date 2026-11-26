@@ -77,6 +77,8 @@ public class NeatFabricConfig {
 		private boolean showOnPlayers;
 		@Comment("Whether bars on bosses should be shown")
 		private boolean showOnBosses;
+		@Comment("Hide bars for CustomNPCs that display a boss bar")
+		private boolean hideCustomNpcsBossBars;
 		@Comment("Only show bars for mobs you are targeting")
 		private boolean showOnlyFocused;
 		@Comment("Show bars for mobs that are at full health")
@@ -126,6 +128,7 @@ public class NeatFabricConfig {
 			showOnHostile = true;
 			showOnPlayers = true;
 			showOnBosses = true;
+			hideCustomNpcsBossBars = true;
 			showOnlyFocused = false;
 			showFullHealth = true;
 			enableDebugInfo = true;
@@ -266,6 +269,11 @@ public class NeatFabricConfig {
 		@Override
 		public boolean showOnBosses() {
 			return showOnBosses;
+		}
+
+		@Override
+		public boolean hideCustomNpcsBossBars() {
+			return hideCustomNpcsBossBars;
 		}
 
 		@Override
