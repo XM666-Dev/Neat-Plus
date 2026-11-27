@@ -231,7 +231,7 @@ public class HealthBarRenderer {
 		final float textScale = 0.5F;
 		final int barHeight = NeatConfig.instance.barHeight();
 		final float fade = living.isDeadOrDying()
-				? 1.0F - (living.deathTime + partialTicks) / 20.F
+				? Math.max(1.0F - (living.deathTime + partialTicks) / 20.F, 0.0F)
 				: 1.0F;
 		final int alpha = (int) (255 * fade * fade);
 		if (alpha == 0) {
