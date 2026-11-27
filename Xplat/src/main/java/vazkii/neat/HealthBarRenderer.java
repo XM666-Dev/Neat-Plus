@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;
@@ -185,11 +186,13 @@ public class HealthBarRenderer {
 			for (ItemStack armorSlot : living.getArmorSlots()) {
 				if (!armorSlot.isEmpty()) {
 					wearingThings = true;
+					break;
 				}
 			}
 			for (ItemStack handSlot : living.getHandSlots()) {
 				if (!handSlot.isEmpty()) {
 					wearingThings = true;
+					break;
 				}
 			}
 			if (!wearingThings) {
@@ -227,13 +230,21 @@ public class HealthBarRenderer {
 		final float globalScale = 0.0267F;
 		final float textScale = 0.5F;
 		final int barHeight = NeatConfig.instance.barHeight();
+		final float fade = living.isDeadOrDying()
+				? 1.0F - (living.deathTime + partialTicks) / 20.F
+				: 1.0F;
+		final int alpha = (int) (255 * fade * fade);
+		if (alpha == 0) {
+			return;
+		}
 		final boolean boss = isBoss(living);
 		final Integer factionId = CNPCCompat.getNpcFactionId(living);
 		final boolean hideHealthElements = factionId != null
 				&& NeatConfig.instance.factionIdBlacklist().contains(factionId);
 		float padding = NeatConfig.instance.backgroundPadding();
-		final String name = living.hasCustomName()
-				? ChatFormatting.ITALIC + living.getCustomName().getString()
+		Component customName = living.getCustomName();
+		final String name = customName != null
+				? customName.getString()
 				: living.getDisplayName().getString();
 		final float nameLen = mc.font.width(name) * textScale;
 		final float halfSize = Math.max(NeatConfig.instance.plateSize(), nameLen / 2.0F + 10.0F);
@@ -262,10 +273,11 @@ public class HealthBarRenderer {
 				bgHeight -= (int) 4F;
 			}
 			VertexConsumer builder = buffers.getBuffer(NeatRenderType.BAR_TEXTURE_TYPE);
-			builder.addVertex(poseStack.last().pose(), -halfSize - padding, -bgHeight, 0.01F).setColor(0, 0, 0, 60).setUv(0.0F, 0.0F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), -halfSize - padding, barHeight + padding, 0.01F).setColor(0, 0, 0, 60).setUv(0.0F, 0.5F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), halfSize + padding, barHeight + padding, 0.01F).setColor(0, 0, 0, 60).setUv(1.0F, 0.5F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), halfSize + padding, -bgHeight, 0.01F).setColor(0, 0, 0, 60).setUv(1.0F, 0.0F).setLight(light);
+			int backgroundAlpha = 60 * alpha / 255;
+			builder.addVertex(poseStack.last().pose(), -halfSize - padding, -bgHeight, 0.01F).setColor(0, 0, 0, backgroundAlpha).setUv(0.0F, 0.0F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), -halfSize - padding, barHeight + padding, 0.01F).setColor(0, 0, 0, backgroundAlpha).setUv(0.0F, 0.5F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), halfSize + padding, barHeight + padding, 0.01F).setColor(0, 0, 0, backgroundAlpha).setUv(1.0F, 0.5F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), halfSize + padding, -bgHeight, 0.01F).setColor(0, 0, 0, backgroundAlpha).setUv(1.0F, 0.0F).setLight(light);
 		}
 
 		// Health Bar
@@ -279,24 +291,25 @@ public class HealthBarRenderer {
 		float healthHalfSize = halfSize * (living.getHealth() / maxHealth);
 
 		VertexConsumer builder = buffers.getBuffer(NeatRenderType.BAR_TEXTURE_TYPE);
-		builder.addVertex(poseStack.last().pose(), -halfSize, 0, 0.001F).setColor(r, g, b, 127).setUv(0.0F, 0.75F).setLight(light);
-		builder.addVertex(poseStack.last().pose(), -halfSize, barHeight, 0.001F).setColor(r, g, b, 127).setUv(0.0F, 1.0F).setLight(light);
-		builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, barHeight, 0.001F).setColor(r, g, b, 127).setUv(1.0F, 1.0F).setLight(light);
-		builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, 0, 0.001F).setColor(r, g, b, 127).setUv(1.0F, 0.75F).setLight(light);
+		int barAlpha = 127 * alpha / 255;
+		builder.addVertex(poseStack.last().pose(), -halfSize, 0, 0.001F).setColor(r, g, b, barAlpha).setUv(0.0F, 0.75F).setLight(light);
+		builder.addVertex(poseStack.last().pose(), -halfSize, barHeight, 0.001F).setColor(r, g, b, barAlpha).setUv(0.0F, 1.0F).setLight(light);
+		builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, barHeight, 0.001F).setColor(r, g, b, barAlpha).setUv(1.0F, 1.0F).setLight(light);
+		builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, 0, 0.001F).setColor(r, g, b, barAlpha).setUv(1.0F, 0.75F).setLight(light);
 
 		// Blank part of the bar
 		if (healthHalfSize < halfSize) {
-			builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, 0, 0.001F).setColor(0, 0, 0, 127).setUv(0.0F, 0.5F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, barHeight, 0.001F).setColor(0, 0, 0, 127).setUv(0.0F, 0.75F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), halfSize, barHeight, 0.001F).setColor(0, 0, 0, 127).setUv(1.0F, 0.75F).setLight(light);
-			builder.addVertex(poseStack.last().pose(), halfSize, 0, 0.001F).setColor(0, 0, 0, 127).setUv(1.0F, 0.5F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, 0, 0.001F).setColor(0, 0, 0, barAlpha).setUv(0.0F, 0.5F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), -halfSize + 2 * healthHalfSize, barHeight, 0.001F).setColor(0, 0, 0, barAlpha).setUv(0.0F, 0.75F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), halfSize, barHeight, 0.001F).setColor(0, 0, 0, barAlpha).setUv(1.0F, 0.75F).setLight(light);
+			builder.addVertex(poseStack.last().pose(), halfSize, 0, 0.001F).setColor(0, 0, 0, barAlpha).setUv(1.0F, 0.5F).setLight(light);
 		}
 
 		// Text
-		{
-			final int textColor = HexFormat.fromHexDigits(NeatConfig.instance.textColor());
-			final int nameColor = CNPCCompat.getFactionNameColor(factionId, textColor,
-					NeatConfig.instance.factionIdNameColors());
+		if (alpha >= 4) {
+			final int textColor = alpha << 24 | HexFormat.fromHexDigits(NeatConfig.instance.textColor());
+			final int nameColor = alpha << 24 | (CNPCCompat.getFactionNameColor(factionId, textColor,
+					NeatConfig.instance.factionIdNameColors()) & 0xFFFFFF);
 			final int black = 0;
 
 			// Name
